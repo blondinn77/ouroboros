@@ -1007,7 +1007,16 @@ class BasicAuthMiddleware(BaseHTTPMiddleware):
     """
 
     async def dispatch(self, request: Request, call_next):
-        password = os.environ.get("WEB_PASSWORD", "").strip()
+        # Read credentials from settings.json directly so changes take effect
+        # immediately without a server restart.
+        try:
+            settings = load_settings()
+            password = settings.get("WEB_PASSWORD", "").strip()
+            username = settings.get("WEB_USERNAME", "admin").strip() or "admin"
+        except Exception:
+            password = os.environ.get("WEB_PASSWORD", "").strip()
+            username = os.environ.get("WEB_USERNAME", "admin").strip() or "admin"
+
         if not password:
             # Auth disabled — pass through
             return await call_next(request)
@@ -1015,8 +1024,6 @@ class BasicAuthMiddleware(BaseHTTPMiddleware):
         # WebSocket upgrade — exempt (browser can't set auth headers for WS)
         if request.headers.get("upgrade", "").lower() == "websocket":
             return await call_next(request)
-
-        username = os.environ.get("WEB_USERNAME", "admin").strip() or "admin"
 
         auth_header = request.headers.get("Authorization", "")
         if auth_header.startswith("Basic "):
