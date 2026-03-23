@@ -1,0 +1,324 @@
+[
+  {
+    "offer_id": "DV-PJ-GRHEART-XL",
+    "product_id": 1380713587,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-GRHEART-M",
+    "product_id": 1380713588,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-GRHEART-L",
+    "product_id": 1380713589,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLUEHEART-XXL",
+    "product_id": 1575510603,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLUEHEART-XL",
+    "product_id": 1575510604,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLUEHEART-M",
+    "product_id": 1575510607,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLUEHEART-XXXL",
+    "product_id": 1575510609,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLUEHEART-L",
+    "product_id": 1575510610,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLACKHEART-XXL",
+    "product_id": 1575576232,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLACKHEART-XXXL",
+    "product_id": 1575576233,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLACKHEART-XL",
+    "product_id": 1575576240,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLACKHEART-M",
+    "product_id": 1575576244,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLACKHEART-L",
+    "product_id": 1575576247,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-WHITEHEART-M",
+    "product_id": 1575581754,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-WHITEHEART-XXL",
+    "product_id": 1575581787,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-WHITEHEART-L",
+    "product_id": 1575581788,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-WHITEHEART-XL",
+    "product_id": 1575581800,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-WHITEHEART-XXXL",
+    "product_id": 1575581805,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-GRHEART-XXL",
+    "product_id": 1575601466,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-GRHEART-XXXL",
+    "product_id": 1575601482,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-ROSESHORTS-L",
+    "product_id": 1577674017,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-ROSESHORTS-M",
+    "product_id": 1577674026,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-ROSESHORTS-XL",
+    "product_id": 1577674043,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-ROSESHORTS-S",
+    "product_id": 1577674058,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLACKSHORTS-M",
+    "product_id": 1577842055,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLACKSHORTS-L",
+    "product_id": 1577842059,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLACKSHORTS-XL",
+    "product_id": 1577842067,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLACKSHORTS-S",
+    "product_id": 1577842078,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-GOLDSHORTS-XL",
+    "product_id": 2370261598,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-GOLDSHORTS-S",
+    "product_id": 2370261638,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-GOLDSHORTS-M",
+    "product_id": 2370261691,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-GOLDSHORTS-L",
+    "product_id": 2370261717,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-ROSEHEART-XL",
+    "product_id": 2370753580,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-ROSEHEART-2XL",
+    "product_id": 2370753589,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-ROSEHEART-L",
+    "product_id": 2370753603,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-ROSEHEART-3XL",
+    "product_id": 2370753654,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-REDCHAIN-L",
+    "product_id": 2389762976,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-REDCHAIN-2XL",
+    "product_id": 2389763060,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-REDCHAIN-XL",
+    "product_id": 2389763101,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-GRHEART-4XL",
+    "product_id": 2389826419,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-GRHEART-5XL",
+    "product_id": 2389826517,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLUEHEART-5XL",
+    "product_id": 2389860136,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLUEHEART-4XL",
+    "product_id": 2389860142,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLACKTOILE-XL",
+    "product_id": 2389927751,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLACKTOILE-2XL",
+    "product_id": 2389927757,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  },
+  {
+    "offer_id": "DV-PJ-BLACKTOILE-L",
+    "product_id": 2389927792,
+    "name": null,
+    "available": 0,
+    "reserved": 0
+  }
+]

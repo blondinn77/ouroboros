@@ -24,6 +24,7 @@ __pycache__/
 
 # Secrets
 settings.json
+ouroboros/api/ozon_secrets.py
 
 # Rescue snapshots
 /data/archive/rescue/
