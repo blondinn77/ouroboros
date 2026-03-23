@@ -39,43 +39,25 @@ def main():
         
         logger.info("Fetching inventory data from Ozon API...")
         
-        # First, get all stock information
-        stock_items = {}
-        for item in client.get_stock_info():
-            offer_id = item['offer_id']
-            stock_items[offer_id] = {
-                'offer_id': offer_id,
-                'product_id': item['product_id'],
-                'available': item['available'],
-                'reserved': item['reserved'],
-                'total_stock': item['available'] + item['reserved']
-            }
-        
-        logger.info(f"Retrieved {len(stock_items)} inventory items")
-        
-        # Now, get product details for each item to get names
+        # Get all product information with detailed fields
         complete_inventory = []
-        processed_product_ids = set()
         
         for item in client.get_product_list():
+            # Extract basic information
             offer_id = item['offer_id']
             product_id = item['product_id']
             
-            # Skip if we've already processed this product
-            if product_id in processed_product_ids:
-                continue
-                
-            processed_product_ids.add(product_id)
+            # Try to get product name from various sources
+            name = None
             
-            # Get product name and other details
-            name = item.get('name')
+            # First, check if name is directly available
+            if item.get('name'):
+                name = item['name']
             
-            # If name is not in the main object, check attributes
-            if not name:
-                attributes = item.get('attributes', [])
-                for attr in attributes:
+            # If not, check attributes (commonly used for product name)
+            if not name and item.get('attributes'):
+                for attr in item['attributes']:
                     if attr.get('attribute_id') == 43 and attr.get('values'):
-                        # 43 is typically the attribute_id for product name
                         name = attr['values'][0].get('value')
                         break
             
@@ -83,35 +65,34 @@ def main():
             if not name:
                 name = offer_id
 
-            # Combine with stock information if available
-            stock_info = stock_items.get(offer_id, {
-                'available': 0,
-                'reserved': 0,
-                'total_stock': 0
-            })
+            # Extract pricing information
+            price_info = {}
+            if 'price' in item:
+                price_info = item['price']
+                
+            # Extract analytics data (contains stock information)
+            analytics_data = {}
+            if 'analytics_data' in item:
+                analytics_data = item['analytics_data']
+                
+            # Extract quantity information
+            quantity = item.get('quantity', 0)
             
+            # Create comprehensive inventory item
             complete_item = {
                 'offer_id': offer_id,
                 'product_id': product_id,
                 'name': name,
-                'available': stock_info['available'],
-                'reserved': stock_info['reserved'],
-                'total_stock': stock_info['total_stock']
+                'price_info': price_info,
+                'analytics_data': analytics_data,
+                'quantity': quantity,
+                'has_fbo_stocks': item.get('has_fbo_stocks', False),
+                'has_fbs_stocks': item.get('has_fbs_stocks', False),
+                'is_discounted': item.get('is_discounted', False),
+                'archived': item.get('archived', False),
             }
             
             complete_inventory.append(complete_item)
-        
-        # For any stock items that don't have product info, add them with fallback name
-        for offer_id, item in stock_items.items():
-            if not any(i['offer_id'] == offer_id for i in complete_inventory):
-                complete_inventory.append({
-                    'offer_id': offer_id,
-                    'product_id': item['product_id'],
-                    'name': offer_id,  # fallback name
-                    'available': item['available'],
-                    'reserved': item['reserved'],
-                    'total_stock': item['total_stock']
-                })
         
         logger.info(f"Processed {len(complete_inventory)} complete inventory items")
         
@@ -133,18 +114,30 @@ def main():
         logger.info("Summary of complete inventory data:")
         logger.info(f"Total SKUs: {len(complete_inventory)}")
         
-        # Find items with available stock
-        active_stock = [item for item in complete_inventory if item.get('available', 0) > 0]
-        logger.info(f"SKUs with available stock: {len(active_stock)}")
+        # Find non-archived items (active inventory)
+        active_inventory = [item for item in complete_inventory if not item['archived']]
+        logger.info(f"Active SKUs (not archived): {len(active_inventory)}")
         
-        # Calculate total inventory
-        total_available = sum(item.get('available', 0) for item in complete_inventory)
-        logger.info(f"Total available inventory: {total_available} units")
+        # Find items with quantity > 0
+        in_stock_items = [item for item in complete_inventory if item['quantity'] > 0]
+        logger.info(f"SKUs with positive quantity: {len(in_stock_items)}")
+        
+        # Calculate total inventory value if prices are available
+        total_value = 0
+        valued_items = 0
+        for item in complete_inventory:
+            if item['price_info'].get('price') and item['quantity'] > 0:
+                total_value += item['price_info']['price'] * item['quantity']
+                valued_items += 1
+        
+        if valued_items > 0:
+            logger.info(f"Estimated total inventory value: {total_value} RUB for {valued_items} priced items")
         
         # Display first few items for verification
         logger.info("First 5 inventory items:")
         for i, item in enumerate(complete_inventory[:5]):
-            logger.info(f"  {i+1}. {item['name']}: {item['total_stock']} total ({item['available']} available)")
+            price = item['price_info'].get('price', 'N/A')
+            logger.info(f"  {i+1}. {item['name']}: {item['quantity']} units at {price} RUB")
         
     except ImportError as e:
         logger.error(f"Import error: {e}")

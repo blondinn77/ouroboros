@@ -71,7 +71,7 @@ class OzonSellerAPI:
         )
         
     def get_product_list(self, **kwargs) -> Generator[Dict[Any, Any], None, None]:
-        """Get list of products with pagination."""
+        """Get list of products with pagination and detailed information."""
         last_id = 0
         while True:
             response = self._request(
@@ -90,7 +90,10 @@ class OzonSellerAPI:
                         "attributes": True,
                         "price": True,
                         "analytics_data": True,
-                        "tags": True
+                        "tags": True,
+                        "documents": True,
+                        "characteristics": True,
+                        "premium_benefits": True
                     }
                 }
             )
