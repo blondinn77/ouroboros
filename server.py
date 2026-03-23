@@ -609,6 +609,9 @@ async def api_settings_get(request: Request) -> JSONResponse:
     for key in ("OPENROUTER_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GITHUB_TOKEN"):
         if safe.get(key):
             safe[key] = safe[key][:8] + "..." if len(safe[key]) > 8 else "***"
+    # Never expose the password hash to the client — replace with bool indicating auth is active
+    pw_hash = safe.pop("WEB_PASSWORD_HASH", "")
+    safe["WEB_AUTH_ENABLED"] = bool(pw_hash)
     return JSONResponse(safe)
 
 
@@ -616,6 +619,17 @@ async def api_settings_post(request: Request) -> JSONResponse:
     try:
         body = await request.json()
         current = load_settings()
+        # Hash the password before storing — never keep plaintext
+        if "WEB_PASSWORD" in body:
+            raw_password = body.pop("WEB_PASSWORD", "").strip()
+            if raw_password:
+                import bcrypt
+                body["WEB_PASSWORD_HASH"] = bcrypt.hashpw(
+                    raw_password.encode("utf-8"), bcrypt.gensalt()
+                ).decode("utf-8")
+            else:
+                # Empty password = disable auth
+                body["WEB_PASSWORD_HASH"] = ""
         for key in _SETTINGS_DEFAULTS:
             if key in body:
                 current[key] = body[key]
@@ -1000,7 +1014,8 @@ async def lifespan(app):
 class BasicAuthMiddleware(BaseHTTPMiddleware):
     """Simple HTTP Basic Auth gate for the web UI.
 
-    Active only when WEB_PASSWORD env var is set (non-empty).
+    Active only when WEB_PASSWORD_HASH is set in settings (non-empty).
+    Passwords are stored as bcrypt hashes — never in plaintext.
     WebSocket connections (/ws) are exempt — the browser doesn't send
     Basic Auth headers for WS upgrades; the web UI is already behind
     the HTTP auth challenge at that point.
@@ -1011,13 +1026,13 @@ class BasicAuthMiddleware(BaseHTTPMiddleware):
         # immediately without a server restart.
         try:
             settings = load_settings()
-            password = settings.get("WEB_PASSWORD", "").strip()
+            pw_hash = settings.get("WEB_PASSWORD_HASH", "").strip()
             username = settings.get("WEB_USERNAME", "admin").strip() or "admin"
         except Exception:
-            password = os.environ.get("WEB_PASSWORD", "").strip()
+            pw_hash = os.environ.get("WEB_PASSWORD_HASH", "").strip()
             username = os.environ.get("WEB_USERNAME", "admin").strip() or "admin"
 
-        if not password:
+        if not pw_hash:
             # Auth disabled — pass through
             return await call_next(request)
 
@@ -1028,9 +1043,12 @@ class BasicAuthMiddleware(BaseHTTPMiddleware):
         auth_header = request.headers.get("Authorization", "")
         if auth_header.startswith("Basic "):
             try:
+                import bcrypt
                 decoded = base64.b64decode(auth_header[6:]).decode("utf-8")
                 provided_user, provided_pass = decoded.split(":", 1)
-                if provided_user == username and provided_pass == password:
+                if provided_user == username and bcrypt.checkpw(
+                    provided_pass.encode("utf-8"), pw_hash.encode("utf-8")
+                ):
                     return await call_next(request)
             except Exception:
                 pass

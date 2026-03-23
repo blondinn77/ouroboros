@@ -70,7 +70,7 @@ SETTINGS_DEFAULTS = {
     "GITHUB_REPO": "",
     # Web UI access control (Basic Auth)
     "WEB_USERNAME": "admin",
-    "WEB_PASSWORD": "",  # empty = no auth required
+    "WEB_PASSWORD_HASH": "",  # bcrypt hash of password; empty = no auth required
     # Telegram bot integration
     "TELEGRAM_BOT_TOKEN": "",
     "TELEGRAM_ALLOWED_CHAT_IDS": "",  # comma-separated chat IDs
@@ -226,7 +226,7 @@ def apply_settings_to_env(settings: dict) -> None:
         "USE_LOCAL_MAIN", "USE_LOCAL_CODE", "USE_LOCAL_LIGHT", "USE_LOCAL_FALLBACK",
     ]
     env_keys = env_keys + ["TELEGRAM_BOT_TOKEN", "TELEGRAM_ALLOWED_CHAT_IDS",
-                           "WEB_USERNAME", "WEB_PASSWORD"]
+                           "WEB_USERNAME", "WEB_PASSWORD_HASH"]
     for k in env_keys:
         val = settings.get(k)
         if val is None or val == "":

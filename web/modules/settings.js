@@ -223,7 +223,10 @@ export function initSettings({ ws, state }) {
         if (s.TELEGRAM_BOT_TOKEN) document.getElementById('s-tg-token').value = s.TELEGRAM_BOT_TOKEN;
         if (s.TELEGRAM_ALLOWED_CHAT_IDS) document.getElementById('s-tg-chat-ids').value = s.TELEGRAM_ALLOWED_CHAT_IDS;
         document.getElementById('s-web-username').value = s.WEB_USERNAME || 'admin';
-        // Never pre-fill password field — show placeholder only
+        // Never pre-fill password field — hash is not sent to client.
+        // Show placeholder indicating whether auth is currently active.
+        const pwField = document.getElementById('s-web-password');
+        pwField.placeholder = s.WEB_AUTH_ENABLED ? '••••••• (set — enter new to change)' : 'Set a strong password';
         if (s.LOCAL_MODEL_SOURCE) document.getElementById('s-local-source').value = s.LOCAL_MODEL_SOURCE;
         if (s.LOCAL_MODEL_FILENAME) document.getElementById('s-local-filename').value = s.LOCAL_MODEL_FILENAME;
         if (s.LOCAL_MODEL_PORT) document.getElementById('s-local-port').value = s.LOCAL_MODEL_PORT;
