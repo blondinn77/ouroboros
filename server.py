@@ -143,6 +143,59 @@ def _run_supervisor(settings: dict) -> None:
         from ouroboros.utils import set_log_sink
         set_log_sink(bridge.push_log)
 
+        # --- Telegram bridge (optional) ------------------------------------
+        _tg_token = settings.get("TELEGRAM_BOT_TOKEN", "").strip()
+        _tg_ids_raw = settings.get("TELEGRAM_ALLOWED_CHAT_IDS", "").strip()
+        _tg_allowed: set = set()
+        for _id in _tg_ids_raw.split(","):
+            _id = _id.strip()
+            if _id.lstrip("-").isdigit():
+                _tg_allowed.add(int(_id))
+
+        _tg_bridge = None
+        if _tg_token:
+            from supervisor.telegram_bridge import TelegramBridge as _TGBridge
+
+            def _on_tg_incoming(tg_chat_id: int, tg_user_id: int, text: str) -> None:
+                """Route Telegram message into the main message bus."""
+                bridge.ui_send(text)
+                # Remember the originating Telegram chat_id so replies go back there
+                try:
+                    from supervisor.state import load_state, save_state
+                    st = load_state()
+                    st.setdefault("telegram_chat_ids", [])
+                    if tg_chat_id not in st["telegram_chat_ids"]:
+                        st["telegram_chat_ids"].append(tg_chat_id)
+                    save_state(st)
+                except Exception:
+                    pass
+
+            _tg_bridge = _TGBridge(
+                token=_tg_token,
+                allowed_chat_ids=_tg_allowed,
+                on_incoming=_on_tg_incoming,
+            )
+
+            # Mirror outgoing messages to Telegram
+            _orig_broadcast = bridge._broadcast_fn
+            def _broadcast_with_tg(msg: dict) -> None:
+                if _orig_broadcast:
+                    _orig_broadcast(msg)
+                # Forward chat replies and progress to Telegram
+                if _tg_bridge and msg.get("type") == "chat" and msg.get("role") == "assistant":
+                    try:
+                        from supervisor.state import load_state
+                        st = load_state()
+                        for _cid in st.get("telegram_chat_ids", []):
+                            _tg_bridge.send_message(int(_cid), msg.get("content", ""))
+                    except Exception:
+                        pass
+
+            bridge._broadcast_fn = _broadcast_with_tg
+            _tg_bridge.start()
+            log.info("Telegram bridge started (allowed_ids=%s)", _tg_allowed)
+        # -------------------------------------------------------------------
+
         bus_init(
             drive_root=DATA_DIR,
             total_budget_limit=float(settings.get("TOTAL_BUDGET", 10.0)),

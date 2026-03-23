@@ -150,6 +150,20 @@ export function initSettings({ ws, state }) {
                 <div class="form-row"><div class="form-field"><label>GitHub Repo</label><input id="s-gh-repo" placeholder="owner/repo-name"></div></div>
             </div>
             <div class="divider"></div>
+            <div class="form-section">
+                <h3>Telegram (optional)</h3>
+                <div style="margin:0 0 8px 0;font-size:12px;color:var(--text-secondary)">
+                    Connect a Telegram bot so you can chat with Ouroboros from your phone.
+                    Get a token from <a href="https://t.me/BotFather" target="_blank" style="color:var(--accent)">@BotFather</a>.
+                    Restart required after saving.
+                </div>
+                <div class="form-row"><div class="form-field"><label>Bot Token</label><input id="s-tg-token" type="password" placeholder="1234567890:AAE..."></div></div>
+                <div class="form-row"><div class="form-field"><label>Allowed Chat IDs</label><input id="s-tg-chat-ids" placeholder="233232566" style="width:300px">
+                    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Comma-separated. Get your ID from <a href="https://t.me/userinfobot" target="_blank" style="color:var(--accent)">@userinfobot</a>.</div>
+                </div></div>
+                <div id="tg-status" style="margin-top:6px;font-size:13px;display:none"></div>
+            </div>
+            <div class="divider"></div>
             <div class="form-row">
                 <button class="btn btn-save" id="btn-save-settings">Save Settings</button>
             </div>
@@ -163,7 +177,7 @@ export function initSettings({ ws, state }) {
     `;
     document.getElementById('content').appendChild(page);
 
-    const secretInputIds = ['s-openrouter', 's-openai', 's-anthropic', 's-gh-token'];
+    const secretInputIds = ['s-openrouter', 's-openai', 's-anthropic', 's-gh-token', 's-tg-token'];
     secretInputIds.forEach((id) => {
         const input = document.getElementById(id);
         input.addEventListener('focus', () => {
@@ -194,6 +208,8 @@ export function initSettings({ ws, state }) {
         if (s.OUROBOROS_TOOL_TIMEOUT_SEC) document.getElementById('s-tool-timeout').value = s.OUROBOROS_TOOL_TIMEOUT_SEC;
         if (s.GITHUB_TOKEN) document.getElementById('s-gh-token').value = s.GITHUB_TOKEN;
         if (s.GITHUB_REPO) document.getElementById('s-gh-repo').value = s.GITHUB_REPO;
+        if (s.TELEGRAM_BOT_TOKEN) document.getElementById('s-tg-token').value = s.TELEGRAM_BOT_TOKEN;
+        if (s.TELEGRAM_ALLOWED_CHAT_IDS) document.getElementById('s-tg-chat-ids').value = s.TELEGRAM_ALLOWED_CHAT_IDS;
         if (s.LOCAL_MODEL_SOURCE) document.getElementById('s-local-source').value = s.LOCAL_MODEL_SOURCE;
         if (s.LOCAL_MODEL_FILENAME) document.getElementById('s-local-filename').value = s.LOCAL_MODEL_FILENAME;
         if (s.LOCAL_MODEL_PORT) document.getElementById('s-local-port').value = s.LOCAL_MODEL_PORT;
@@ -309,6 +325,7 @@ export function initSettings({ ws, state }) {
             OUROBOROS_HARD_TIMEOUT_SEC: parseInt(document.getElementById('s-hard-timeout').value) || 1800,
             OUROBOROS_TOOL_TIMEOUT_SEC: parseInt(document.getElementById('s-tool-timeout').value) || 120,
             GITHUB_REPO: document.getElementById('s-gh-repo').value,
+            TELEGRAM_ALLOWED_CHAT_IDS: document.getElementById('s-tg-chat-ids').value.trim(),
             LOCAL_MODEL_SOURCE: document.getElementById('s-local-source').value,
             LOCAL_MODEL_FILENAME: document.getElementById('s-local-filename').value,
             LOCAL_MODEL_PORT: parseInt(document.getElementById('s-local-port').value) || 8766,
@@ -328,6 +345,8 @@ export function initSettings({ ws, state }) {
         if (antKey && !antKey.includes('...')) body.ANTHROPIC_API_KEY = antKey;
         const ghToken = document.getElementById('s-gh-token').value;
         if (ghToken && !ghToken.includes('...')) body.GITHUB_TOKEN = ghToken;
+        const tgToken = document.getElementById('s-tg-token').value;
+        if (tgToken && !tgToken.includes('...')) body.TELEGRAM_BOT_TOKEN = tgToken;
 
         try {
             const resp = await fetch('/api/settings', {
