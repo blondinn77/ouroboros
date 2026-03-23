@@ -1,46 +1,35 @@
-# Secrets
-.env
-.env.*
-*.key
-*.pem
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Virtual Environment
+venv/
+env/
+venv.bak/
 
 # IDE
-.cursor/
-.vscode/
 .idea/
+.vscode/
+*.swp
+*.swo
 
 # Python
 __pycache__/
 *.pyc
-*.pyo
-*.egg-info/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.pyinstaller-cache/
-
-# Virtual environments
-venv/
-.venv/
-env/
-
-# Coverage
-.coverage
-htmlcov/
-
-# Build artifacts
-dist/
-build/
-*.dmg
-python-standalone/
-
-# OS
 .DS_Store
-Thumbs.db
 
-# Release helpers (not tracked)
-.create_release.py
-.release_notes.md
+# Data
+/data/archive/
 
-# Test artifacts
-<MagicMock*
+# Secrets
+settings.json
+
+# Rescue snapshots
+/data/archive/rescue/
+
+# Local model cache
+/root/.cache/ms-playwright/
+
+# Test output
+/test-results/
