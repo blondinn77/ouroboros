@@ -1,4 +1,4 @@
-# Ouroboros v4.5.0 — Architecture & Reference
+# Ouroboros v4.6.0 — Architecture & Reference
 
 This document describes every component, page, button, API endpoint, and data flow.
 It is the single source of truth for how the system works. Keep it updated.
@@ -55,7 +55,23 @@ server.py (Starlette+uvicorn) ← HTTP + WebSocket on localhost:8765
       ├── world_profiler.py    ← System profile generator (WORLD.md)
       ├── tools/               ← Auto-discovered tool plugins
       └── compat.py            ← Cross-platform process/path/locking helpers
-```
+
+### Telegram bridge (`supervisor/telegram_bridge.py`)
+
+Optional daemon thread that connects a Telegram bot to the main message bus
+via long polling (no HTTPS/webhook required). Started automatically when
+`TELEGRAM_BOT_TOKEN` is set in settings.
+
+- **Incoming**: polls `getUpdates` → filters by `TELEGRAM_ALLOWED_CHAT_IDS` →
+  calls `LocalChatBridge.ui_send(text)` to route into the agent as a normal message.
+  Persists originating `chat_id` in `state.json["telegram_chat_ids"]` for reply routing.
+- **Outgoing**: wraps `LocalChatBridge._broadcast_fn`; every `{type:"chat", role:"assistant"}`
+  event is forwarded to all registered Telegram chat_ids via `sendMessage`.
+- **Photo support**: `sendPhoto` via multipart/form-data upload.
+- **Message splitting**: chunks > 4096 chars split on newlines.
+- **Auth**: messages from non-allowed chat_ids are rejected with `⛔ Unauthorized.`
+- Configuration: `TELEGRAM_BOT_TOKEN` (required), `TELEGRAM_ALLOWED_CHAT_IDS`
+  (comma-separated integers). Both editable in Settings UI → Telegram section.
 
 ### Two-process model
 
