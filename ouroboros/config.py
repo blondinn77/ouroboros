@@ -68,6 +68,9 @@ SETTINGS_DEFAULTS = {
     "OUROBOROS_EFFORT_CONSCIOUSNESS": "low",
     "GITHUB_TOKEN": "",
     "GITHUB_REPO": "",
+    # Web UI access control (Basic Auth)
+    "WEB_USERNAME": "admin",
+    "WEB_PASSWORD": "",  # empty = no auth required
     # Telegram bot integration
     "TELEGRAM_BOT_TOKEN": "",
     "TELEGRAM_ALLOWED_CHAT_IDS": "",  # comma-separated chat IDs
@@ -222,7 +225,8 @@ def apply_settings_to_env(settings: dict) -> None:
         "LOCAL_MODEL_CHAT_FORMAT",
         "USE_LOCAL_MAIN", "USE_LOCAL_CODE", "USE_LOCAL_LIGHT", "USE_LOCAL_FALLBACK",
     ]
-    env_keys = env_keys + ["TELEGRAM_BOT_TOKEN", "TELEGRAM_ALLOWED_CHAT_IDS"]
+    env_keys = env_keys + ["TELEGRAM_BOT_TOKEN", "TELEGRAM_ALLOWED_CHAT_IDS",
+                           "WEB_USERNAME", "WEB_PASSWORD"]
     for k in env_keys:
         val = settings.get(k)
         if val is None or val == "":

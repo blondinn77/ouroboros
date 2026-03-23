@@ -151,6 +151,18 @@ export function initSettings({ ws, state }) {
             </div>
             <div class="divider"></div>
             <div class="form-section">
+                <h3>Web UI Access (Basic Auth)</h3>
+                <div style="margin:0 0 8px 0;font-size:12px;color:var(--text-secondary)">
+                    Protect the web interface with a password. Leave password empty to disable auth.
+                    Changes take effect immediately (no restart needed).
+                </div>
+                <div class="form-row">
+                    <div class="form-field"><label>Username</label><input id="s-web-username" placeholder="admin" style="width:200px"></div>
+                    <div class="form-field"><label>Password</label><input id="s-web-password" type="password" placeholder="Set a strong password"></div>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="form-section">
                 <h3>Telegram (optional)</h3>
                 <div style="margin:0 0 8px 0;font-size:12px;color:var(--text-secondary)">
                     Connect a Telegram bot so you can chat with Ouroboros from your phone.
@@ -210,6 +222,8 @@ export function initSettings({ ws, state }) {
         if (s.GITHUB_REPO) document.getElementById('s-gh-repo').value = s.GITHUB_REPO;
         if (s.TELEGRAM_BOT_TOKEN) document.getElementById('s-tg-token').value = s.TELEGRAM_BOT_TOKEN;
         if (s.TELEGRAM_ALLOWED_CHAT_IDS) document.getElementById('s-tg-chat-ids').value = s.TELEGRAM_ALLOWED_CHAT_IDS;
+        document.getElementById('s-web-username').value = s.WEB_USERNAME || 'admin';
+        // Never pre-fill password field — show placeholder only
         if (s.LOCAL_MODEL_SOURCE) document.getElementById('s-local-source').value = s.LOCAL_MODEL_SOURCE;
         if (s.LOCAL_MODEL_FILENAME) document.getElementById('s-local-filename').value = s.LOCAL_MODEL_FILENAME;
         if (s.LOCAL_MODEL_PORT) document.getElementById('s-local-port').value = s.LOCAL_MODEL_PORT;
@@ -325,6 +339,7 @@ export function initSettings({ ws, state }) {
             OUROBOROS_HARD_TIMEOUT_SEC: parseInt(document.getElementById('s-hard-timeout').value) || 1800,
             OUROBOROS_TOOL_TIMEOUT_SEC: parseInt(document.getElementById('s-tool-timeout').value) || 120,
             GITHUB_REPO: document.getElementById('s-gh-repo').value,
+            WEB_USERNAME: document.getElementById('s-web-username').value.trim() || 'admin',
             TELEGRAM_ALLOWED_CHAT_IDS: document.getElementById('s-tg-chat-ids').value.trim(),
             LOCAL_MODEL_SOURCE: document.getElementById('s-local-source').value,
             LOCAL_MODEL_FILENAME: document.getElementById('s-local-filename').value,
@@ -347,6 +362,8 @@ export function initSettings({ ws, state }) {
         if (ghToken && !ghToken.includes('...')) body.GITHUB_TOKEN = ghToken;
         const tgToken = document.getElementById('s-tg-token').value;
         if (tgToken && !tgToken.includes('...')) body.TELEGRAM_BOT_TOKEN = tgToken;
+        const webPassword = document.getElementById('s-web-password').value;
+        if (webPassword) body.WEB_PASSWORD = webPassword;
 
         try {
             const resp = await fetch('/api/settings', {

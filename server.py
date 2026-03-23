@@ -21,9 +21,13 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
+import base64
+
 from starlette.applications import Starlette
+from starlette.middleware import Middleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
-from starlette.responses import JSONResponse, HTMLResponse, FileResponse
+from starlette.responses import JSONResponse, HTMLResponse, FileResponse, Response
 from starlette.routing import Route, Mount, WebSocketRoute
 from starlette.staticfiles import StaticFiles
 from starlette.websockets import WebSocket, WebSocketDisconnect
@@ -989,7 +993,53 @@ async def lifespan(app):
             pass
 
 
-app = Starlette(routes=routes, lifespan=lifespan)
+# ---------------------------------------------------------------------------
+# Basic Auth middleware
+# ---------------------------------------------------------------------------
+
+class BasicAuthMiddleware(BaseHTTPMiddleware):
+    """Simple HTTP Basic Auth gate for the web UI.
+
+    Active only when WEB_PASSWORD env var is set (non-empty).
+    WebSocket connections (/ws) are exempt — the browser doesn't send
+    Basic Auth headers for WS upgrades; the web UI is already behind
+    the HTTP auth challenge at that point.
+    """
+
+    async def dispatch(self, request: Request, call_next):
+        password = os.environ.get("WEB_PASSWORD", "").strip()
+        if not password:
+            # Auth disabled — pass through
+            return await call_next(request)
+
+        # WebSocket upgrade — exempt (browser can't set auth headers for WS)
+        if request.headers.get("upgrade", "").lower() == "websocket":
+            return await call_next(request)
+
+        username = os.environ.get("WEB_USERNAME", "admin").strip() or "admin"
+
+        auth_header = request.headers.get("Authorization", "")
+        if auth_header.startswith("Basic "):
+            try:
+                decoded = base64.b64decode(auth_header[6:]).decode("utf-8")
+                provided_user, provided_pass = decoded.split(":", 1)
+                if provided_user == username and provided_pass == password:
+                    return await call_next(request)
+            except Exception:
+                pass
+
+        return Response(
+            content="Unauthorized",
+            status_code=401,
+            headers={"WWW-Authenticate": 'Basic realm="Ouroboros"'},
+        )
+
+
+app = Starlette(
+    routes=routes,
+    lifespan=lifespan,
+    middleware=[Middleware(BasicAuthMiddleware)],
+)
 
 
 # ---------------------------------------------------------------------------
