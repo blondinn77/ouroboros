@@ -1005,7 +1005,7 @@ def _find_free_port(start: int = 8765, max_tries: int = 10) -> int:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
-            s.bind(("127.0.0.1", start))
+            s.bind(("0.0.0.0", start))
             return start
         except OSError:
             pass
@@ -1013,7 +1013,7 @@ def _find_free_port(start: int = 8765, max_tries: int = 10) -> int:
         port = start + offset
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                s.bind(("127.0.0.1", port))
+                s.bind(("0.0.0.0", port))
             return port
         except OSError:
             continue
@@ -1036,7 +1036,7 @@ if __name__ == "__main__":
     log.info("Starting Ouroboros server on port %d", actual_port)
     config = uvicorn.Config(
         app,
-        host="127.0.0.1",
+        host="0.0.0.0",
         port=actual_port,
         log_level="warning",
         ws_ping_interval=20,
